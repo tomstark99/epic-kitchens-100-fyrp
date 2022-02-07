@@ -18,14 +18,20 @@ def main(args):
         train_labels = pickle.load(f)
     # train_labels = pd.read_pickle(args.train_pkl)
 
+    # sorted class frequency
     verb_class_frequencies = train_labels['verb_class'].value_counts().sort_index()
 
+    # divide frequencies by total number of action sequences
     verb_class_priors = verb_class_frequencies / verb_class_frequencies.sum()
+
+    # set the column index and name
     verb_class_priors.index.name = 'verb_class'
     verb_class_priors.name = 'prior'
     
+    # fill missing class priors with 0
     verb_class_priors_index_fix = verb_class_priors.reindex(list(range(0,97)), fill_value=0)
-
+    
+    # save to csv
     verb_class_priors_index_fix.to_csv(args.class_priors_csv)
 
 
