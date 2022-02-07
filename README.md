@@ -149,7 +149,7 @@ $ python src/scripts/extract_features.py \
     datasets/epic-100/features/p01_features.pkl
 ```
 
-optionally you can change the number of workers for the PyTorch DataLoader with the `--num_workers` argument. If this script failes at any point then you can simply rerun and it will continue from where it crashed.
+optionally you can change the number of workers for the PyTorch DataLoader with the `--num-workers` argument. If this script failes at any point then you can simply rerun and it will continue from where it crashed.
 
 # Training MTRN models
 
@@ -185,7 +185,7 @@ $ bash ./train_verb_noun.sh 200
 
 | Argument | Description | Default |
 | - | - | - |
-| `--val_features_pkl` | If you want to train / test on two distinct frame feature sets rather than using a train/test split | `None` |
+| `--val-features-pkl` | If you want to train / test on two distinct frame feature sets rather than using a train/test split | `None` |
 | `--train-test-split` | Specify a train/test split between 0 and 1 | 0.3 |
 | `--min-frames` | Minimum number of frames to train models for | 1 |
 | `--max-frames` | Maximum number of frames to train models for (these two arguments can also be used in case of a training crash) | 8 |
@@ -227,7 +227,7 @@ $ python src/scripts/compute_esvs.py \
     datasets/epic-100/labels/verb_class_priors.csv \
     datasets/epic-100/labels/noun_class_priors.csv \
     datasets/epic-100/esvs/mtrn-esv-n_frames=8.pkl \
-    --sample_n_frames 8
+    --sample-n-frames 8
 ```
 
 # Visualisation
@@ -246,7 +246,7 @@ $ for n in $(seq 1 8); do
         datasets/epic-100/labels/verb_class_priors.csv \
         datasets/epic-100/labels/verb_class_priors.csv \
         datasets/epic-100/esvs/mtrn-esv-n_frames=$n.pkl \
-        --sample_n_frames $n
+        --sample-n-frames $n
   done
 ```
 
