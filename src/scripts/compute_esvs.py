@@ -35,7 +35,7 @@ parser.add_argument("checkpoints", type=Path, help="Path to model checkpoints")
 parser.add_argument("verb_class_priors", type=Path, help="Path to verb class priors")
 parser.add_argument("noun_class_priors", type=Path, help="Path to noun class priors")
 parser.add_argument("esvs_pickle", type=Path, help="Path to pickle file to save features")
-parser.add_argument("--sample_n_frames", type=int, default=8, help="How many frames to sample to compute ESVs for")
+parser.add_argument("--sample-n-frames", type=int, default=8, help="How many frames to sample to compute ESVs for")
 
 def main(args):
 
