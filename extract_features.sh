@@ -16,4 +16,5 @@ which python
 conda activate epic-100
 which python
 
+# last run job 10032270
 python src/scripts/extract_features.py datasets/epic-100/gulp/train/ checkpoints/trn_rgb.ckpt datasets/epic-100/features/p01_features.pkl --num-workers 8
