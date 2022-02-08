@@ -270,7 +270,7 @@ $ python src/scripts/dump_frames_from_gulp_dir.py \
     datasets/epic-100/gulp/train \
     datasets/epic-100/video_frames
 
-$ for dir in datasets/epic-100/video_frames; do
+$ for dir in datasets/epic-100/video_frames/*; do
     if [[ -f "$dir/frame_000000.jpg" && ! -f "$dir.webm" ]]; then
         ./bin/ffmpeg \
         -r 8 \
@@ -293,20 +293,20 @@ $ mv datasets/epic-100/video_frames/*.webm datasets/epic-100/video_frames/videos
 while [play-fair](https://github.com/willprice/play-fair) for Something-Something-v2 only predicts a single class label, we are predicting a verb and a noun label separately. To make the dashboard easier to use we have to extract action sequence instances for all verb/noun combinations:
 
 ```bash
-$ python src/scripts/extract_vert_noun_links.py \
+$ python src/scripts/extract_verb_noun_links.py \
     datasets/epic-100/gulp/train \
     datasets/epic-100/labels/verb_noun.pkl \
     datasets/epic-100/EPIC_100_verb_classes.csv \
     datasets/epic-100/EPIC_100_noun_classes.csv
     
-$ python src/scripts/extract_vert_noun_links.py \
+$ python src/scripts/extract_verb_noun_links.py \
     datasets/epic-100/gulp/train \
     datasets/epic-100/labels/verb_noun_classes.pkl \
     datasets/epic-100/EPIC_100_verb_classes.csv \
     datasets/epic-100/EPIC_100_noun_classes.csv \
     --classes True
     
-$ python src/scripts/extract_vert_noun_links.py \
+$ python src/scripts/extract_verb_noun_links.py \
     datasets/epic-100/gulp/train \
     datasets/epic-100/labels/verb_noun_classes_narration.pkl \
     datasets/epic-100/EPIC_100_verb_classes.csv \
