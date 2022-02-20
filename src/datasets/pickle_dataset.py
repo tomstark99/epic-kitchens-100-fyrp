@@ -21,8 +21,8 @@ class PickleDataset(Dataset):
     def _load(self):
         with open(self.pkl_path, 'rb') as f:
             self.pkl_dict = pickle.load(f)
-            frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
-            self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
+        frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
+        self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
     
     def _video_from_narration_id(self, key: int):
         l = self.frame_cumsum[key]
@@ -55,8 +55,8 @@ class MultiPickleDataset(Dataset):
     def _load(self):
         with open(self.pkl_path, 'rb') as f:
             self.pkl_dict = pickle.load(f)
-            frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
-            self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
+        frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
+        self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
     
     def _video_from_narration_id(self, key: int):
         l = self.frame_cumsum[key]
@@ -85,8 +85,8 @@ class TestMultiPickleDataset(Dataset):
     def _load(self):
         with open(self.pkl_path, 'rb') as f:
             self.pkl_dict = pickle.load(f)
-            frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
-            self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
+        frame_counts = [label['num_frames'] for label in self.pkl_dict['labels']]
+        self.frame_cumsum = np.cumsum(np.concatenate([self.frame_cumsum, frame_counts]), dtype=int)
     
     def _video_from_narration_id(self, key: int):
         l = self.frame_cumsum[key]

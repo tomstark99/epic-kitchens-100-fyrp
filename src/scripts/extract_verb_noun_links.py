@@ -42,7 +42,7 @@ def main(args):
         }, f)
 
 def extract_verb_noun_links(
-    dataset: GulpDataset,
+    dataset: Dataset,
     verbs: pd.DataFrame,
     nouns: pd.DataFrame,
     output_dict: Dict[str, List],

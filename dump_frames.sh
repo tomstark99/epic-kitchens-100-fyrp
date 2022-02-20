@@ -2,7 +2,7 @@
 #SBATCH --partition cpu
 #SBATCH --nodes=8
 #SBATCH --cpus-per-task=8
-#SBATCH --time 0-05:00
+#SBATCH --time 1-00:00
 #SBATCH --mem=32GB
 
 # get rid of any modules already loaded
@@ -16,4 +16,4 @@ which python
 conda activate epic-100
 which python
 
-python src/scripts/dump_frames_from_gulp_dir.py --video-subset P01 /mnt/storage/scratch/wp13824/vil/datasets/epic-100/gulp/rgb_train/ /mnt/storage/scratch/jb18789/datasets/epic-100/video_frames/
+python src/scripts/dump_frames_from_gulp_dir.py /mnt/storage/scratch/wp13824/vil/datasets/epic-100/gulp/rgb_train/ /mnt/storage/scratch/jb18789/datasets/epic-100/video_frames/

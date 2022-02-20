@@ -37,9 +37,15 @@ parser.add_argument("--sample-n-frames", type=int, default=8, help="How many fra
 def main(args):
 
     dataset = GulpDataset(args.gulp_dir)
-    dataloader = DataLoader(dataset, batch_size=1)
-
     n_frames = args.sample_n_frames
+    data_to_persist = compute_esvs(dataset, n_frames)
+
+    with open(args.esvs_pickle, 'wb') as f:
+            pickle.dump(data_to_persist, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+def compute_esvs(dataset: Dataset, n_frames: int):
+
+    dataloader = DataLoader(dataset, batch_size=1)
     frame_sampler = RandomSampler(frame_count=n_frames, snippet_length=1, test=True)
 
     def subsample_frames(video_length: torch.Tensor) -> Tuple[np.ndarray, torch.Tensor]:
@@ -107,8 +113,9 @@ def main(args):
 
     data_to_persist = {k: collate(vs) for k, vs in data.items()}
 
-    with open(args.esvs_pickle, 'wb') as f:
-        pickle.dump(data_to_persist, f, protocol=pickle.HIGHEST_PROTOCOL)
+    return data_to_persist
+
+    
 
 if __name__ == "__main__":
     main(parser.parse_args())
