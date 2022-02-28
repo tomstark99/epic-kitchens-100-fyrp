@@ -244,7 +244,7 @@ $ for n in $(seq 1 8); do
         datasets/epic-100/features/p01_features.pkl \
         datasets/epic-100/models/
         datasets/epic-100/labels/verb_class_priors.csv \
-        datasets/epic-100/labels/verb_class_priors.csv \
+        datasets/epic-100/labels/noun_class_priors.csv \
         datasets/epic-100/esvs/mtrn-esv-n_frames=$n.pkl \
         --sample-n-frames $n
   done
