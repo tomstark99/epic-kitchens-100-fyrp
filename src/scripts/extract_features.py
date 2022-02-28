@@ -56,6 +56,8 @@ def main(args):
         dataset = SubsetGulpDataset(args.gulp_dir, subset)
     else:
         dataset = GulpDataset(args.gulp_dir)
+
+    # features_pickle = args.features_pickle.parent / f'o_{args.features_pickle.name}'
     feature_writer = PickleFeatureWriter(args.features_pickle, features_dim=args.feature_dim)
     dataset_subsample = Subset(dataset, torch.arange(feature_writer.length, len(dataset)))
 

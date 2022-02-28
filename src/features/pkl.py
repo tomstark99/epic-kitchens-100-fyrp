@@ -7,13 +7,14 @@ import numpy as np
 
 class PickleFeatureWriter(FeatureWriter):
     
-    def __init__(self, pkl_path: Path, features_dim: int):
+    def __init__(self, pkl_path: Path, features_dim: int, save_freq: int = 5000):
         self.pkl_path = pkl_path
         self.features_dim = features_dim
         self.length = 0
         self.narration_ids = []
         self.features = []
         self.labels = []
+        self.save_freq = save_freq
         self.load()
         
     def append(self, narration_id: str, features: np.ndarray, labels: Dict[str, Any]) -> None:
@@ -22,10 +23,11 @@ class PickleFeatureWriter(FeatureWriter):
         self.features.append(features)
         self.labels.append(labels)
         self.length = len(self.narration_ids)
-        try:
-            self.save()
-        except Exception as e:
-            print(e)
+        if self.length % self.save_freq == 0:
+            try:
+                self.save()
+            except Exception as e:
+                print(e)
         
     def save(self):
         # self.chunk_no = chunk_no
@@ -37,10 +39,7 @@ class PickleFeatureWriter(FeatureWriter):
                     except Exception:
                         pass
 
-        if self.length % 5000 == 0:
-            path = self.pkl_path.parent / f'{self.length}_{self.pkl_path.name}'
-        else:
-            path = self.pkl_path
+        path = self.pkl_path.parent / f'{self.length}_{self.pkl_path.name}'
         with open(path, 'wb') as f:
             pickle.dump({
                 'length': self.length,
@@ -48,6 +47,8 @@ class PickleFeatureWriter(FeatureWriter):
                 'features': np.concatenate(self.features),
                 'labels': self.labels
             }, f)
+        # else:
+            # path = self.pkl_path
     
     def load(self):
         try:
