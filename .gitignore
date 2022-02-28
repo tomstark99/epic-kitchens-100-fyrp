@@ -227,6 +227,7 @@ slurm*
 /datasets/epic-100/features
 /datasets/epic-100/esvs
 /datasets/epic-100/video_frames
+/datasets/epic-100/video_id_features
 !/datasets/epic-100/*/.*
 !/datasets/epic-100/labels/p01.pkl
 !/datasets/epic-100/labels/EPIC_100_*_classes.csv

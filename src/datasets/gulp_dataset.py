@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 from torch.utils.data import Dataset
 from pathlib import Path
 from gulpio2 import GulpDirectory

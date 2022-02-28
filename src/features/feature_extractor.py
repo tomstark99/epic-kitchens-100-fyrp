@@ -57,7 +57,7 @@ class FeatureExtractor:
                 with t.no_grad():
                     chunk_features = self.model.features(chunk.to(self.device))
                     chunk_features = self.model.new_fc(chunk_features)
-                    flatten_batch_features.append(chunk_features.squeeze(0))
+                    flatten_batch_features.append(chunk_features.cpu().squeeze(0))
             flatten_batch_features = t.cat(flatten_batch_features, dim=0)
             batch_features = flatten_batch_features.view((batch_size, 
                                                         n_frames, 
@@ -74,7 +74,7 @@ class FeatureExtractor:
         assert len(batch_narration_id) == batch_size
         assert len([batch_labels]) == batch_size
         assert len(batch_features) == batch_size
-        batch_features = batch_features.squeeze(0).cpu().numpy()
+        batch_features = batch_features.squeeze(0).numpy()
 
         feature_writer.append(batch_narration_id, batch_features, batch_labels)
 

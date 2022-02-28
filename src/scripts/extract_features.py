@@ -1,5 +1,6 @@
 import argparse
 import logging
+import pickle
 
 from gulpio2 import GulpDirectory
 from multiprocessing import cpu_count
@@ -17,7 +18,7 @@ from systems import EpicActionRecogintionDataModule
 
 from features.feature_extractor import FeatureExtractor
 from features.pkl import PickleFeatureWriter
-from datasets.gulp_dataset import GulpDataset
+from datasets.gulp_dataset import GulpDataset, SubsetGulpDataset
 
 from ipdb import launch_ipdb_on_exception
 
@@ -31,6 +32,7 @@ parser.add_argument("features_pickle", type=Path, help="Path to pickle file to s
 parser.add_argument("--num-workers", type=int, default=0, help="Number of features expected from frame")
 parser.add_argument("--batch-size", type=int, default=128, help="Max frames to run through backbone 2D CNN at a time")
 parser.add_argument("--feature-dim", type=int, default=256, help="Number of features expected from frame")
+parser.add_argument("--p01-subset", default=False, action='store_true', help="only extract p01 features")
 
 def main(args):
 
@@ -48,7 +50,12 @@ def main(args):
     model = EpicActionRecognitionSystem(cfg)
     model.load_state_dict(ckpt['state_dict'])
     
-    dataset = GulpDataset(args.gulp_dir)
+    if args.p01_subset:
+        with open('/user/home/jb18789/epic-kitchens-100-fyrp/datasets/epic-100/labels/p01.pkl', 'rb') as f:
+            subset = pickle.load(f).index.values
+        dataset = SubsetGulpDataset(args.gulp_dir, subset)
+    else:
+        dataset = GulpDataset(args.gulp_dir)
     feature_writer = PickleFeatureWriter(args.features_pickle, features_dim=args.feature_dim)
     dataset_subsample = Subset(dataset, torch.arange(feature_writer.length, len(dataset)))
 

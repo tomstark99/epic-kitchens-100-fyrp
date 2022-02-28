@@ -45,12 +45,14 @@ class PickleSplitter:
         for video_id in self.video_ids:
             try:
                 new_offset = offset + self.video_frequencies[video_id]
-                video_narration_ids = self.narration_id[offset:new_offset]
-                video_features = self.features[offset:new_offset]
                 with open(self.pkl_path.parent / f'{video_id}_features.pkl', 'wb') as f:
-                    pickle.dump(
-                        #TODO: dict
-                        , f)
+                    pickle.dump({
+                        self.video_frequencies[video_id],
+                        self.narration_id[offset:new_offset],
+                        self.features[:,offset:new_offset],
+                        self.labels[offset:new_offset]
+                    }, f)
+                offset = new_offset
             except Exception as e:
                 print(e)
 
@@ -60,7 +62,7 @@ class PickleSplitter:
                 pkl_dict = pickle.load(f)
             self.length = pkl_dict['length']
             self.narration_ids = pkl_dict['narration_id']
-            self.features = [pkl_dict['features']]
+            self.features = pkl_dict['features']
             self.labels = pkl_dict['labels']
         except FileNotFoundError:
             pass

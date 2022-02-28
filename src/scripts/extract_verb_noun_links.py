@@ -3,6 +3,7 @@ import pickle
 import pandas as pd
 
 from datasets.gulp_dataset import GulpDataset
+from torch.utils.data import Dataset
 from pathlib import Path
 from typing import Dict, List
 

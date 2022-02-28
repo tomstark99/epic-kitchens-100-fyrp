@@ -115,7 +115,7 @@ def train(
         else:
             raise ValueError(f"train / test split: {args.train_test_split} is an invalid percentage")
 
-    writer = SummaryWriter(f'datasets/epic/runs/epic_mtrn_max-frames={args.max_frames}'f'_epochs={args.epoch}'f'_batch_size={args.batch_size}'f'_type={args.type}', flush_secs=1)
+    writer = SummaryWriter(f'datasets/epic-100/runs/epic_mtrn_max-frames={args.max_frames}'f'_epochs={args.epoch}'f'_batch_size={args.batch_size}'f'_type={args.type}', flush_secs=1)
 
     training_result = []
     testing_result = []

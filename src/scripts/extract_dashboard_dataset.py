@@ -2,7 +2,7 @@ import argparse
 import pickle
 import pandas as pd
 
-from datasets.gulp_dataset import GulpSubsetDataset
+from datasets.gulp_dataset import SubsetGulpDataset
 from pathlib import Path
 from typing import Dict, List
 
@@ -33,10 +33,10 @@ def main(args):
     verbs = pd.read_csv(args.verb_classes)
     nouns = pd.read_csv(args.noun_classes)
 
-    with open(args.subset, 'r') as f:
+    with open(args.subset_file, 'r') as f:
         subset = f.read().splitlines()
 
-    dataset = GulpSubsetDataset(args.gulp_dir, subset)
+    dataset = SubsetGulpDataset(args.gulp_dir, subset)
 
     compute_dummy_esvs(args, dataset)
     extract_links(args, dataset, verbs, nouns)
@@ -56,7 +56,7 @@ def extract_links(args, dataset, verbs, nouns):
         verb_noun,
         classes=False,
         narration=False)
-    with open(args.save_directory / 'verb_noun.pkl', 'wb') as f:
+    with open(args.save_directory_links / 'verb_noun.pkl', 'wb') as f:
         pickle.dump({
             verb: unique_list(verb_noun[verb]) for verb in verb_noun.keys()
         }, f)
@@ -69,7 +69,7 @@ def extract_links(args, dataset, verbs, nouns):
         verb_noun_classes,
         classes=True,
         narration=False)
-    with open(args.save_directory / 'verb_noun_classes.pkl', 'wb') as f:
+    with open(args.save_directory_links / 'verb_noun_classes.pkl', 'wb') as f:
         pickle.dump({
             verb: unique_list(verb_noun_classes[verb]) for verb in verb_noun_classes.keys()
         }, f)
@@ -82,7 +82,7 @@ def extract_links(args, dataset, verbs, nouns):
         verb_noun_classes_narration,
         classes=True,
         narration=True)
-    with open(args.save_directory / 'verb_noun_classes_narration.pkl', 'wb') as f:
+    with open(args.save_directory_links / 'verb_noun_classes_narration.pkl', 'wb') as f:
         pickle.dump({
             verb: unique_list(verb_noun_classes_narration[verb]) for verb in verb_noun_classes_narration.keys()
         }, f)

@@ -37,7 +37,11 @@ class PickleFeatureWriter(FeatureWriter):
                     except Exception:
                         pass
 
-        with open(self.pkl_path, 'wb') as f:
+        if self.length % 5000 == 0:
+            path = self.pkl_path.parent / f'{self.length}_{self.pkl_path.name}'
+        else:
+            path = self.pkl_path
+        with open(path, 'wb') as f:
             pickle.dump({
                 'length': self.length,
                 'narration_id': self.narration_ids,
@@ -53,5 +57,6 @@ class PickleFeatureWriter(FeatureWriter):
                 self.narration_ids = pkl_dict['narration_id']
                 self.features = [pkl_dict['features']]
                 self.labels = pkl_dict['labels']
-        except FileNotFoundError:
+        except Exception as e:
+            print(e)
             pass
