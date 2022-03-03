@@ -136,6 +136,7 @@ class Visualiser:
 
         @app.callback(
             Output('model-preds-bar','figure'),
+            Output('model-preds-bar', 'clickData'),
             Input('frame-slider','value'),
             Input('video','value')
         )
@@ -143,7 +144,7 @@ class Visualiser:
             result = self.results[narr_id]
             v_df, n_df = self.get_preds_df(result, n_frames)
 
-            return self.plot_preds(v_df, n_df)
+            return (self.plot_preds(v_df, n_df), None)
 
         @app.callback(
             Output('esv-preds-plot','figure'),
@@ -277,6 +278,8 @@ class Visualiser:
     def plot_esvs(self, result: Result, n_frames: int, alt_class: Optional[int] = None):
         
         pred_class = result.label
+
+        print(alt_class)
         
         if alt_class != pred_class and alt_class is not None:
             dicts = [pred_class, alt_class]
@@ -285,7 +288,9 @@ class Visualiser:
 
         classes = {}
         for k in pred_class.keys():
-            classes[k] = [d[k] for d in dicts]
+            classes[k] = list(dict.fromkeys([d[k] for d in dicts]))
+
+        print(classes)
 
         # print(result.sequence_idxs[n_frames-1], n_frames)
     
@@ -322,16 +327,17 @@ class Visualiser:
             av_df = pd.DataFrame(entries['verb'][n_frames:]) 
             an_df = pd.DataFrame(entries['noun'][n_frames:])
             for name, df in zip(['a_verb','a_noun'],[av_df, an_df]):
-                fig.add_trace(go.Scatter(
-                    name=f'<b>{name}</b>',
-                    x=df.Frame,
-                    y=df.ESV,
-                    hovertemplate='<br>Frame: %{x}<br>'+ f'{name}: ' + '%{text}<br>' + 'Score: %{y}',
-                    text=[f'{c}' for c in df.Class],
-                    line_shape='spline',
-                    opacity=0.3,
-                    line_color=df.Colour.values[0]
-                ))
+                if not df.empty:
+                    fig.add_trace(go.Scatter(
+                        name=f'<b>{name}</b>',
+                        x=df.Frame,
+                        y=df.ESV,
+                        hovertemplate='<br>Frame: %{x}<br>'+ f'{name}: ' + '%{text}<br>' + 'Score: %{y}',
+                        text=[f'{c}' for c in df.Class],
+                        line_shape='spline',
+                        opacity=0.3,
+                        line_color=df.Colour.values[0]
+                    ))
 
         fig.add_hline(y=0)
 

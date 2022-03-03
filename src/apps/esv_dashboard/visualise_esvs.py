@@ -52,33 +52,27 @@ def main(args):
             'green': '#0F9D58'
         }
     }
-    print("1")
     verbs = pd.read_csv(args.verb_csv)
     nouns = pd.read_csv(args.noun_csv)
 
-    print("2")
     verb2str = pd.Series(verbs.key.values,index=verbs.id).to_dict()
     noun2str = pd.Series(nouns.key.values,index=nouns.id).to_dict()
 
-    print("3")
     verb_noun = pd.read_pickle(args.verb_noun_link_dir / 'verb_noun.pkl')
     verb_noun_classes = pd.read_pickle(args.verb_noun_link_dir / 'verb_noun_classes.pkl')
     verb_noun_narration = pd.read_pickle(args.verb_noun_link_dir /'verb_noun_classes_narration.pkl')
 
-    print("4")
     results_dict = pd.read_pickle(args.esvs_pkl)
 
-    print("5")
     title = "ESV Dashboard"
 
-    print("6")
     results = ShapleyValueResults(results_dict)
-    print("7")
     visualisation = Visualiser(
         results,
         colours, 
         verb2str, 
-        noun2str, verb_noun,
+        noun2str, 
+        verb_noun,
         verb_noun_classes,
         verb_noun_narration, 
         dataset_dir, 
@@ -87,7 +81,6 @@ def main(args):
 
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-    print("8")
     app = Dash(
         __name__,
         title="ESV Visualiser",
@@ -95,7 +88,6 @@ def main(args):
         external_stylesheets=external_stylesheets,
     )
 
-    print("9")
     visualisation.attach_to_app(app)
     app.run_server(host=args.host, debug=args.debug, port=args.port)
 

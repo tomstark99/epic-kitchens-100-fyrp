@@ -32,6 +32,7 @@ parser.add_argument("features_pickle", type=Path, help="Path to pickle file to s
 parser.add_argument("--num-workers", type=int, default=0, help="Number of features expected from frame")
 parser.add_argument("--batch-size", type=int, default=128, help="Max frames to run through backbone 2D CNN at a time")
 parser.add_argument("--feature-dim", type=int, default=256, help="Number of features expected from frame")
+parser.add_argument("--save-frequency", type=int, default=5000, help="Auto-save frequency for frame features")
 parser.add_argument("--p01-subset", default=False, action='store_true', help="only extract p01 features")
 
 def main(args):
@@ -58,7 +59,7 @@ def main(args):
         dataset = GulpDataset(args.gulp_dir)
 
     # features_pickle = args.features_pickle.parent / f'o_{args.features_pickle.name}'
-    feature_writer = PickleFeatureWriter(args.features_pickle, features_dim=args.feature_dim)
+    feature_writer = PickleFeatureWriter(args.features_pickle, features_dim=args.feature_dim, save_freq=args.save_frequency)
     dataset_subsample = Subset(dataset, torch.arange(feature_writer.length, len(dataset)))
 
     extractor = FeatureExtractor(model.model.to(device), device, dtype, dataset_subsample, frame_batch_size=args.batch_size)
