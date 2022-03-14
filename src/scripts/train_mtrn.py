@@ -37,9 +37,10 @@ parser.add_argument("model_params_dir", type=Path, help="Path to save model para
 parser.add_argument("--val-features-pkl", type=Path, help="Path to validation features pickle")
 parser.add_argument("--min-frames", type=int, default=1, help="min frames to train models for")
 parser.add_argument("--max-frames", type=int, default=8, help="max frames to train models for")
-parser.add_argument("--batch-size", type=int, default=512, help="mini-batch size of frame features to run through ")
+parser.add_argument("--batch-size", type=int, default=512, help="mini-batch size of frame features to run through")
 parser.add_argument("--train-test-split", type=float, default=0.3, help="Train test split if no validation features given")
 parser.add_argument("--epoch", type=int, default=200, help="How many epochs to do over the dataset")
+parser.add_argument("--learning-rate", type=float, default=3e-4, help="Learning rate for training optimiser")
 parser.add_argument("--type", type=str, default='verb', help="Which class to train")
 # parser.add_argument("results_pkl", type=Path, help="Path to save training results")
 # parser.add_argument("--test", type=bool, default=False, help="Set test mode to true or false on the RandomSampler")
@@ -115,7 +116,7 @@ def train(
         else:
             raise ValueError(f"train / test split: {args.train_test_split} is an invalid percentage")
 
-    writer = SummaryWriter(f'datasets/epic-100/runs/epic_mtrn_max-frames={args.max_frames}'f'_epochs={args.epoch}'f'_batch_size={args.batch_size}'f'_type={args.type}', flush_secs=1)
+    writer = SummaryWriter(get_summary_writer_log_dir(args), flush_secs=1)
 
     training_result = []
     testing_result = []
@@ -213,7 +214,7 @@ def train(
         # training_result.append(model_train_results)
         # testing_result.append(model_test_results)
 
-        classifier.save_parameters(args.model_params_dir / f'mtrn-frames={models[i].frame_count}'f'-type={args.type}.pt')
+        classifier.save_parameters(args.model_params_dir / f'mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}.pt')
     
     # return {'training': training_result, 'testing': testing_result}
 
@@ -240,6 +241,27 @@ def train(
     #     fig.update_yaxes(type='log')
     #     fig.write_image(args.save_fig)
 
+
+def get_summary_writer_log_dir(args: argparse.Namespace) -> str:
+    """
+    Get a unique directory that hasn't been logged to before for use with a TB
+    SummaryWriter.
+    Args:
+        args: CLI Arguments
+    Returns:
+        Subdirectory of log_dir with unique subdirectory name to prevent multiple runs
+        from getting logged to the same TB log directory (which you can't easily
+        untangle in TB).
+    """
+    tb_log_dir_prefix = f'epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}'
+
+    i = 0
+    while i < 1000:
+        tb_log_dir = Path('datasets/epic-100/runs') / (tb_log_dir_prefix + str(i))
+        if not tb_log_dir.exists():
+            return str(tb_log_dir)
+        i += 1
+    return str(tb_log_dir)
 
 if __name__ == "__main__":
     main(parser.parse_args())

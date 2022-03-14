@@ -2,7 +2,7 @@
 #SBATCH --partition gpu
 #SBATCH --nodes 1
 #SBATCH --gres gpu:2
-#SBATCH --time 1-00:00
+#SBATCH --time 0-04:00
 #SBATCH --mem=64GB
 
 # get rid of any modules already loaded
@@ -16,4 +16,4 @@ which python
 conda activate epic-100
 which python
 
-python src/scripts/extract_features.py datasets/epic-100/gulp/test/ checkpoints/trn_rgb.ckpt datasets/epic-100/features/test_features.pkl || date
+python src/scripts/extract_features.py datasets/epic-100/gulp/test/ checkpoints/trn_rgb.ckpt datasets/epic-100/features/10000_test_features.pkl || date
