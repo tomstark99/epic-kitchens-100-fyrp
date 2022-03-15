@@ -345,7 +345,8 @@ class EpicActionRecogintionShapleyClassifier:
         model: nn.Module, 
         device: torch.device, 
         optimiser: SGD, 
-        frame_sampler: FrameSampler,
+        train_frame_sampler: FrameSampler,
+        test_frame_sampler: FrameSampler,
         trainloader: DataLoader,
         testloader: DataLoader = None, 
         task_type = None,
@@ -354,7 +355,8 @@ class EpicActionRecogintionShapleyClassifier:
         self.model = model
         self.device = device
         self.optimiser = optimiser
-        self.frame_sampler = frame_sampler
+        self.train_frame_sampler = train_frame_sampler
+        self.test_frame_sampler = test_frame_sampler
         self.trainloader = trainloader
         self.testloader = testloader
         self.task_type = task_type
@@ -442,11 +444,16 @@ class EpicActionRecogintionShapleyClassifier:
     def _sample_frames(self, data: List[Tuple[np.ndarray, Dict[str, Any]]]) -> Tuple[torch.FloatTensor, Dict[str, Any]]:
         features = []
         labels = {}
+        print(data)
+        print(len(data))
         for feature, label in data:
             video_length = feature.shape[0]
-            if video_length < self.frame_sampler.frame_count:
-                raise ValueError(f"Video too short to sample {self.frame_sampler.frame_count} from")
-            idxs = np.array(frame_idx_to_list(self.frame_sampler.sample(video_length)))
+            if video_length < self.train_frame_sampler.frame_count:
+                raise ValueError(f"Video too short to sample {self.train_frame_sampler.frame_count} from")
+            if self.model.training:
+                idxs = np.array(frame_idx_to_list(self.train_frame_sampler.sample(video_length)))
+            else:
+                idxs = np.array(frame_idx_to_list(self.test_frame_sampler.sample(video_length)))
             features.append(feature[idxs])
             for k in label.keys():
                 if k in labels:
@@ -478,7 +485,7 @@ class EpicActionRecogintionShapleyClassifier:
         }
 
         for batch_idx, data in enumerate(self.trainloader):
-            
+
             self.optimiser.zero_grad()
 
             if self.task_type:
@@ -523,7 +530,8 @@ class EpicActionRecogintionShapleyClassifier:
         }
 
         for batch_idx, data in enumerate(self.testloader):
-            
+
+            print(data)
             if self.task_type:
                 step_results = self._type_step(self._sample_frames(data))
             else:

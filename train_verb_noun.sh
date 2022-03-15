@@ -2,7 +2,7 @@
 #SBATCH --partition gpu
 #SBATCH --nodes 2
 #SBATCH --gres gpu:2
-#SBATCH --time 1-00:00
+#SBATCH --time 3-00:00
 #SBATCH --mem=64GB
 
 # get rid of any modules already loaded

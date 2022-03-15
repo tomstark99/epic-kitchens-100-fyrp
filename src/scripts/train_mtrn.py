@@ -70,13 +70,14 @@ def main(args):
     if args.type == 'verb':
         models = [V_MTRN(frame_count=i).to(device) for i in range(1,args.max_frames+1)]
         optimisers = [Adam(m.parameters(), lr=3e-4) for m in models]
-        frame_samplers = [RandomSampler(frame_count=m.frame_count, snippet_length=1, test=False) for m in models]
     elif args.type == 'noun':
         models = [N_MTRN(frame_count=i).to(device) for i in range(1,args.max_frames+1)]
         optimisers = [Adam(m.parameters(), lr=3e-4) for m in models]
-        frame_samplers = [RandomSampler(frame_count=m.frame_count, snippet_length=1, test=False) for m in models]
     else:
         raise ValueError(f"unknown type: {args.type}, known types are 'verb' and 'noun'")
+
+    train_frame_samplers = [RandomSampler(frame_count=i, snippet_length=1, test=False) for i in range(1, args.max_frames+1)]
+    test_frame_samplers = [RandomSampler(frame_count=i, snippet_length=1, test=True) for i in range(1, args.max_frames+1)]
 
     dataset = MultiPickleDataset(args.features_pkl)
 
@@ -85,7 +86,8 @@ def main(args):
         dataset,
         models,
         optimisers,
-        frame_samplers
+        train_frame_samplers,
+        test_frame_samplers
     )
 
     # with open(args.results_pkl, 'wb') as f:
@@ -100,16 +102,16 @@ def train(
     dataset: Dataset,
     models: List[nn.Module],
     optimisers: List[Adam],
-    frame_samplers: List[RandomSampler],
+    train_frame_samplers: List[RandomSampler],
+    test_frame_samplers: List[RandomSampler]
 ):
     assert len(models) == len(optimisers)
-    assert len(models) == len(frame_samplers)
-
-    
+    assert len(models) == len(train_frame_samplers)
+    assert len(models) == len(test_frame_samplers)
 
     if args.val_features_pkl:
-        trainloader = DataLoader(MultiPickleDataset(args.features_pkl), batch_size=args.batch_size, collate_fn=no_collate)
-        testloader = DataLoader(MultiPickleDataset(args.val_features_pkl), batch_size=args.batch_size, collate_fn=no_collate)
+        trainloader = DataLoader(MultiPickleDataset(args.features_pkl), batch_size=args.batch_size, collate_fn=no_collate, shuffle=True)
+        testloader = DataLoader(MultiPickleDataset(args.val_features_pkl), batch_size=args.batch_size, collate_fn=no_collate, shuffle=False)
     else:
         if args.train_test_split >= 0 and args.train_test_split <= 1:
             trainloader, testloader = train_test_loader(dataset, args.batch_size, args.train_test_split)
@@ -133,7 +135,8 @@ def train(
             models[i],
             torch.device("cuda:0"),
             optimisers[i],
-            frame_samplers[i],
+            train_frame_samplers[i],
+            test_frame_samplers[i],
             trainloader,
             testloader,
             args.type
@@ -214,7 +217,7 @@ def train(
         # training_result.append(model_train_results)
         # testing_result.append(model_test_results)
 
-        classifier.save_parameters(args.model_params_dir / f'mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}.pt')
+        classifier.save_parameters(args.model_params_dir / f'sh_mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}.pt')
     
     # return {'training': training_result, 'testing': testing_result}
 
@@ -253,7 +256,7 @@ def get_summary_writer_log_dir(args: argparse.Namespace) -> str:
         from getting logged to the same TB log directory (which you can't easily
         untangle in TB).
     """
-    tb_log_dir_prefix = f'epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}'
+    tb_log_dir_prefix = f'sh_epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}'
 
     i = 0
     while i < 1000:
