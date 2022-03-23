@@ -221,6 +221,7 @@ fabric.properties
 *.ckpt
 *.pkl
 *.pt
+*.png
 slurm*
 /notebooks/data/*
 /datasets/epic-100/*/*

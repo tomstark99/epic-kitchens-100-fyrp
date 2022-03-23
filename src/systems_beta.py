@@ -31,8 +31,9 @@ from transforms import GroupScale
 from transforms import Stack
 from transforms import ToTorchFormatTensor
 from utils.torch_metrics import accuracy
-
 from frame_sampling import FrameSampler
+
+from sklearn.utils import class_weight
 
 from models.tsm import TSM
 from models.tsn import MTRN
@@ -362,7 +363,7 @@ class EpicActionRecogintionShapleyClassifier:
         self.testloader = testloader
         self.task_type = task_type
         self.log_interval = log_interval
-        # self.train_weights, self.test_weights = self._get_weights()
+        self.train_weights, self.test_weights = self._get_weights()
 
         print(f"Classifier, model: {type(self.model)}"f", type: {self.task_type}"f", frames: {self.model.frame_count}")
 
@@ -377,7 +378,7 @@ class EpicActionRecogintionShapleyClassifier:
             train_len = len(train_classes)
             test_len = len(test_classes)
 
-            return (train_len - train_classes.bincount(minlength=CLASS_COUNTS_DICT[self.task_type]))/train_len, (test_len - test_classes.bincount(minlength=CLASS_COUNTS_DICT[self.task_type]))/test_len
+            return train_len/(CLASS_COUNTS_DICT[self.task_type]*train_classes.bincount(minlength=CLASS_COUNTS_DICT[self.task_type])), test_len/(CLASS_COUNTS_DICT[self.task_type]*test_classes.bincount(minlength=CLASS_COUNTS_DICT[self.task_type]))
 
     def _type_step(self, batch: Tuple[torch.Tensor, Dict[str, Any]]) -> Dict[str, Any]:
 
@@ -397,11 +398,10 @@ class EpicActionRecogintionShapleyClassifier:
         loss = 0.0
         n_tasks = len(tasks)
         for task, d in tasks.items():
-            # if self.model.training:
-            #     task_loss = F.cross_entropy(d['output'], d['labels'], weight=self.train_weights.to(self.device))
-            # else:
-            #     task_loss = F.cross_entropy(d['output'], d['labels'], weight=self.test_weights.to(self.device))
-            task_loss = F.cross_entropy(d['output'], d['labels'])
+            if self.model.training:
+                task_loss = F.cross_entropy(d['output'], d['labels'], weight=self.train_weights.to(self.device))
+            else:
+                task_loss = F.cross_entropy(d['output'], d['labels'], weight=self.test_weights.to(self.device))
 
             loss += d['weight'] * task_loss
             
