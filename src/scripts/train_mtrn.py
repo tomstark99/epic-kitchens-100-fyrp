@@ -42,6 +42,8 @@ parser.add_argument("--train-test-split", type=float, default=0.3, help="Train t
 parser.add_argument("--epoch", type=int, default=200, help="How many epochs to do over the dataset")
 parser.add_argument("--learning-rate", type=float, default=3e-4, help="Learning rate for training optimiser")
 parser.add_argument("--type", type=str, default='verb', help="Which class to train")
+parser.add_argument("--hidden-layer-size", type=int, default=1024, help="Hidden layer size")
+parser.add_argument("--dropout-count", type=int, default=0, help="Number of dropouts")
 # parser.add_argument("results_pkl", type=Path, help="Path to save training results")
 # parser.add_argument("--test", type=bool, default=False, help="Set test mode to true or false on the RandomSampler")
 # parser.add_argument("--log_interval", type=int, default=10, help="How many iterations between outputting running loss")
@@ -64,15 +66,15 @@ def train_test_loader(dataset: MultiPickleDataset, batch_size: int, val_split: f
 
 def main(args):
     
-    device = torch.device("cuda:0")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     dtype = torch.float
     
     if args.type == 'verb':
-        models = [V_MTRN(frame_count=i).to(device) for i in range(1,args.max_frames+1)]
-        optimisers = [Adam(m.parameters(), lr=3e-4) for m in models]
+        models = [V_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count).to(device) for i in range(1,args.max_frames+1)]
+        optimisers = [Adam(m.parameters(), lr=1e-5) for m in models]
     elif args.type == 'noun':
-        models = [N_MTRN(frame_count=i).to(device) for i in range(1,args.max_frames+1)]
-        optimisers = [Adam(m.parameters(), lr=3e-4) for m in models]
+        models = [N_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count).to(device) for i in range(1,args.max_frames+1)]
+        optimisers = [Adam(m.parameters(), lr=1e-5) for m in models]
     else:
         raise ValueError(f"unknown type: {args.type}, known types are 'verb' and 'noun'")
 
@@ -83,6 +85,7 @@ def main(args):
 
     train(
         args,
+        device,
         dataset,
         models,
         optimisers,
@@ -99,6 +102,7 @@ def test():
 
 def train(
     args,
+    device,
     dataset: Dataset,
     models: List[nn.Module],
     optimisers: List[Adam],
@@ -133,7 +137,7 @@ def train(
     ):
         classifier = EpicActionRecogintionShapleyClassifier(
             models[i],
-            torch.device("cuda:0"),
+            device,
             optimisers[i],
             train_frame_samplers[i],
             test_frame_samplers[i],
@@ -217,7 +221,7 @@ def train(
         # training_result.append(model_train_results)
         # testing_result.append(model_test_results)
 
-        classifier.save_parameters(args.model_params_dir / f'sh_mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}.pt')
+        classifier.save_parameters(args.model_params_dir / f'sh_mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}.pt')
     
     # return {'training': training_result, 'testing': testing_result}
 
@@ -256,7 +260,7 @@ def get_summary_writer_log_dir(args: argparse.Namespace) -> str:
         from getting logged to the same TB log directory (which you can't easily
         untangle in TB).
     """
-    tb_log_dir_prefix = f'sh_epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}'
+    tb_log_dir_prefix = f'sh_epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}'
 
     i = 0
     while i < 1000:
