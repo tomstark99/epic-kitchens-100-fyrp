@@ -2,7 +2,7 @@
 #SBATCH --partition gpu
 #SBATCH --nodes 1
 #SBATCH --gres gpu:2
-#SBATCH --time 2-00:00
+#SBATCH --time 7-00:00
 #SBATCH --mem=64GB
 
 # get rid of any modules already loaded
@@ -16,6 +16,6 @@ which python
 conda activate epic-100
 which python
 
-python src/scripts/train_mtrn.py datasets/epic-100/features/67217_train_features.pkl datasets/epic-100/models/ --val-features-pkl datasets/epic-100/features/9668_val_features.pkl --epoch 400 --type "verb" --learning-rate 1e-5 --batch-size 512 --hidden-layer-size 2048 --dropout-count 2
-python src/scripts/train_mtrn.py datasets/epic-100/features/67217_train_features.pkl datasets/epic-100/models/ --val-features-pkl datasets/epic-100/features/9668_val_features.pkl --epoch 400 --type "noun" --learning-rate 1e-5 --batch-size 512 --hidden-layer-size 2048 --dropout-count 2
+python src/scripts/train_mtrn.py datasets/epic-100/features/67217_train_features.pkl datasets/epic-100/models/ --val-features-pkl datasets/epic-100/features/9668_val_features.pkl --epoch 4000 --type "verb" --learning-rate 1e-5 --batch-size 512 --hidden-layer-size 1024 --dropout-count 2 --dropout-probability 0.3
+python src/scripts/train_mtrn.py datasets/epic-100/features/67217_train_features.pkl datasets/epic-100/models/ --val-features-pkl datasets/epic-100/features/9668_val_features.pkl --epoch 4000 --type "noun" --learning-rate 1e-5 --batch-size 512 --hidden-layer-size 1024 --dropout-count 2 --dropout-probability 0.3
 

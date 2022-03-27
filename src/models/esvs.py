@@ -21,12 +21,14 @@ class MTRN(nn.Module):
 
 class V_MTRN(nn.Module):
     
-    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_count: int):
+    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_count: int, dropout_probability: int = 0.5):
         super().__init__()
+        if dropout_probability < 0 or dropout_probability > 1:
+            raise ValueError(f'Probability needs to be between 0 and 1, was: {dropout_probability}')
         self.frame_count = frame_count
         self.dropout_count = dropout_count
         self.fc1 = nn.Linear(256 * frame_count, hidden_layer_size)
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=dropout_probability)
         self.fc2 = nn.Linear(hidden_layer_size, 512)
         self.fc3_verb = nn.Linear(512, 97)
     
@@ -44,12 +46,14 @@ class V_MTRN(nn.Module):
 
 class N_MTRN(nn.Module):
     
-    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_count: int):
+    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_count: int, dropout_probability: int = 0.5):
         super().__init__()
+        if dropout_probability < 0 or dropout_probability > 1:
+            raise ValueError(f'Probability needs to be between 0 and 1, was: {dropout_probability}')
         self.frame_count = frame_count
         self.dropout_count = dropout_count
         self.fc1 = nn.Linear(256 * frame_count, hidden_layer_size)
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(p=dropout_probability)
         self.fc2 = nn.Linear(hidden_layer_size, 512)
         self.fc3_noun = nn.Linear(512, 300)
     

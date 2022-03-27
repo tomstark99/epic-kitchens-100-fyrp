@@ -1,4 +1,5 @@
 import argparse
+from itertools import dropwhile
 import logging
 
 from multiprocessing import cpu_count
@@ -44,6 +45,7 @@ parser.add_argument("--learning-rate", type=float, default=3e-4, help="Learning 
 parser.add_argument("--type", type=str, default='verb', help="Which class to train")
 parser.add_argument("--hidden-layer-size", type=int, default=1024, help="Hidden layer size")
 parser.add_argument("--dropout-count", type=int, default=0, help="Number of dropouts")
+parser.add_argument("--dropout-probability", type=float, default=0.5, help="Probability of dropouts")
 # parser.add_argument("results_pkl", type=Path, help="Path to save training results")
 # parser.add_argument("--test", type=bool, default=False, help="Set test mode to true or false on the RandomSampler")
 # parser.add_argument("--log_interval", type=int, default=10, help="How many iterations between outputting running loss")
@@ -70,10 +72,10 @@ def main(args):
     dtype = torch.float
     
     if args.type == 'verb':
-        models = [V_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count).to(device) for i in range(1,args.max_frames+1)]
+        models = [V_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count, dropout_probability=args.dropout_probability).to(device) for i in range(1,args.max_frames+1)]
         optimisers = [Adam(m.parameters(), lr=1e-5) for m in models]
     elif args.type == 'noun':
-        models = [N_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count).to(device) for i in range(1,args.max_frames+1)]
+        models = [N_MTRN(frame_count=i, hidden_layer_size=args.hidden_layer_size, dropout_count=args.dropout_count, dropout_probability=args.dropout_probability).to(device) for i in range(1,args.max_frames+1)]
         optimisers = [Adam(m.parameters(), lr=1e-5) for m in models]
     else:
         raise ValueError(f"unknown type: {args.type}, known types are 'verb' and 'noun'")
@@ -165,6 +167,8 @@ def train(
 
         liveloss = PlotLosses()
 
+        print(f'Training with model architecture:\n{classifier.model}\nlr: {args.learning_rate}\nbatch size: {args.batch_size}\nepochs: {args.epoch}')
+
         for epoch in tqdm(
             range(args.epoch),
             unit=" epoch",
@@ -218,10 +222,13 @@ def train(
             # liveloss.update(logs)
             # liveloss.send()
 
+            if epoch % 1000 == 0:
+                classifier.save_parameters(args.model_params_dir / f'mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}_dcp={args.dropout_probability}_epoch={epoch}.pt')
+
         # training_result.append(model_train_results)
         # testing_result.append(model_test_results)
 
-        classifier.save_parameters(args.model_params_dir / f'sh_mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}.pt')
+        classifier.save_parameters(args.model_params_dir / f'mtrn-type={args.type}-frames={models[i].frame_count}-batch_size={args.batch_size}-lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}_dcp={args.dropout_probability}_epoch={args.epoch}.pt')
     
     # return {'training': training_result, 'testing': testing_result}
 
@@ -260,7 +267,7 @@ def get_summary_writer_log_dir(args: argparse.Namespace) -> str:
         from getting logged to the same TB log directory (which you can't easily
         untangle in TB).
     """
-    tb_log_dir_prefix = f'sh_epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}'
+    tb_log_dir_prefix = f'epic_mtrn_type={args.type}_epochs={args.epoch}_batch_size={args.batch_size}_lr={args.learning_rate}_hl={args.hidden_layer_size}_dc={args.dropout_count}_dcp={args.dropout_probability}'
 
     i = 0
     while i < 1000:
