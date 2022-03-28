@@ -1,8 +1,9 @@
 import argparse
 import pickle
 import pandas as pd
+import numpy as np
 
-from datasets.gulp_dataset import SubsetGulpDataset
+from datasets.gulp_dataset import GulpDataset, SubsetGulpDataset
 from pathlib import Path
 from typing import Dict, List
 
@@ -22,9 +23,10 @@ parser.add_argument("save_directory_esvs", type=Path, help="Path to directory to
 parser.add_argument("min_frames", type=int, help="Min number of frames to calculate ESVs for")
 parser.add_argument("max_frames", type=int, help="Max number of frames to calculate ESVs for")
 parser.add_argument("save_directory_links", type=Path, help="Path to directory to save files")
-parser.add_argument("subset_file", type=Path, help="Path to subset file")
+parser.add_argument("uids_csv", type=Path, help="Path to subset csv")
 parser.add_argument("verb_classes", type=Path, help="Path to verb classes csv")
 parser.add_argument("noun_classes", type=Path, help="Path to noun classes csv")
+parser.add_argument("--dummy_esvs", default=False, action='store_true', help="also extract dummy features")
 parser.add_argument("--classes", type=bool, default=False, help="Extract as pure class numbers")
 parser.add_argument("--narration-id", type=bool, default=False, help="Extract with noun as tuple with narration_id")
 
@@ -33,12 +35,16 @@ def main(args):
     verbs = pd.read_csv(args.verb_classes)
     nouns = pd.read_csv(args.noun_classes)
 
-    with open(args.subset_file, 'r') as f:
-        subset = f.read().splitlines()
+    if args.uids_csv:
+        uids: np.ndarray = pd.read_csv(args.uids_csv, converters={"uid": str})[
+            "uid"
+        ].values
+        dataset = SubsetGulpDataset(args.gulp_dir, uids)
+    else:
+        dataset = GulpDataset(args.gulp_dir)
 
-    dataset = SubsetGulpDataset(args.gulp_dir, subset)
-
-    compute_dummy_esvs(args, dataset)
+    if args.dummy_esvs:
+        compute_dummy_esvs(args, dataset)
     extract_links(args, dataset, verbs, nouns)
 
 def compute_dummy_esvs(args, dataset):

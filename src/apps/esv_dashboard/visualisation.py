@@ -279,8 +279,6 @@ class Visualiser:
         
         pred_class = result.label
 
-        print(alt_class)
-        
         if alt_class != pred_class and alt_class is not None:
             dicts = [pred_class, alt_class]
         else:
@@ -289,8 +287,6 @@ class Visualiser:
         classes = {}
         for k in pred_class.keys():
             classes[k] = list(dict.fromkeys([d[k] for d in dicts]))
-
-        print(classes)
 
         # print(result.sequence_idxs[n_frames-1], n_frames)
     
