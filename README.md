@@ -10,6 +10,8 @@ If you want to explore further follow the set up guide below, extract features f
 
 # Setup
 
+*The below instructions outline the process for the P01 subset but the same process can also be applied for using the full dataset to calculate ESVs.*
+
 ## Environment
 
 You will always need to set your PYTHONPATH to include the `src` folder. We provide an `.envrc` for use with [`direnv`](https://direnv.net/) which will automatically do that for you when you `cd` into the project directory. Alternatively just run:
@@ -42,8 +44,6 @@ $ mv ffmpeg-git-*-amd64-static/{ffmpeg,ffprobe} bin
 ```
 
 ## Data
-
-*The below instructions outline the process for the P01 subset but the same process can also be applied for using the full dataset*
 
 We store our files in the [`gulpio2`](https://github.com/willprice/GulpIO2) format.
 
