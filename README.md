@@ -1,5 +1,7 @@
 # Play Fair for epic-kitchens-100: Frame Attribution in Video Models
 
+*a repo containing supportive work for a dissertation submitted to the University of Bristol*
+
 This repo extends the attribution method from [play-fair](https://github.com/willprice/play-fair) for explaining action recognition models with the epic-kitchens-100 dataset. Such models fuse information from multiple frames within a video, through score aggregation or relational reasoning. 
 
 We break down a model’s class score into the sum of contributions from each frame, fairly. Our method adapts an axiomatic solution to fair reward distribution in cooperative games, known as the Shapley value, for elements in a variable-length sequence, which we call the Element Shapley Value (ESV). Critically, we propose a tractable approximation of ESV that scales linearly with the number of frames in the sequence.
@@ -40,6 +42,8 @@ $ mv ffmpeg-git-*-amd64-static/{ffmpeg,ffprobe} bin
 ```
 
 ## Data
+
+*The below instructions outline the process for the P01 subset but the same process can also be applied for using the full dataset*
 
 We store our files in the [`gulpio2`](https://github.com/willprice/GulpIO2) format.
 
@@ -118,7 +122,7 @@ We store our files in the [`gulpio2`](https://github.com/willprice/GulpIO2) form
 
 ## Models
 
-We provide TRN model pretrained on the training set of EPIC-KITCHENS-100
+We provide a TRN model pretrained on the training set of EPIC-KITCHENS-100
 
 ```bash
 $ cd checkpoints
