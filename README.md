@@ -1,6 +1,6 @@
 # Play Fair for epic-kitchens-100: Frame Attribution in Video Models
 
-*a repo containing supportive work for a dissertation submitted to the University of Bristol*
+*A repo containing supportive work for a dissertation submitted to the University of Bristol.*
 
 This repo extends the attribution method from [play-fair](https://github.com/willprice/play-fair) for explaining action recognition models with the epic-kitchens-100 dataset. Such models fuse information from multiple frames within a video, through score aggregation or relational reasoning. 
 
