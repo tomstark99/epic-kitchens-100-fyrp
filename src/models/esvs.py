@@ -68,3 +68,41 @@ class N_MTRN(nn.Module):
         x = self.fc3_noun(x)
         
         return x
+
+class V_MF(nn.Module):
+    
+    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_probability: int = 0.5):
+        super().__init__()
+        if dropout_probability < 0 or dropout_probability > 1:
+            raise ValueError(f'Probability needs to be between 0 and 1, was: {dropout_probability}')
+        self.frame_count = frame_count
+        self.fc1 = nn.Linear(768 * frame_count, hidden_layer_size)
+        self.dropout = nn.Dropout(p=dropout_probability)
+        self.fc2_verb = nn.Linear(hidden_layer_size, 97)
+    
+    def forward(self, x):
+        x = x.view(-1, 768 * self.frame_count)
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.fc2_verb(x)
+        
+        return x
+
+class N_MF(nn.Module):
+    
+    def __init__(self, frame_count: int, hidden_layer_size: int, dropout_probability: int = 0.5):
+        super().__init__()
+        if dropout_probability < 0 or dropout_probability > 1:
+            raise ValueError(f'Probability needs to be between 0 and 1, was: {dropout_probability}')
+        self.frame_count = frame_count
+        self.fc1 = nn.Linear(768 * frame_count, hidden_layer_size)
+        self.dropout = nn.Dropout(p=dropout_probability)
+        self.fc2_noun = nn.Linear(hidden_layer_size, 300)
+    
+    def forward(self, x):
+        x = x.view(-1, 768 * self.frame_count)
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.fc2_noun(x)
+        
+        return x

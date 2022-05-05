@@ -16,4 +16,4 @@ which python
 conda activate epic-100
 which python
 
-python src/scripts/extract_features.py datasets/epic-100/gulp/train/ checkpoints/trn_rgb.ckpt datasets/epic-100/video_id_features/p01_features.pkl --p01-subset || date
+python src/scripts/extract_features.py datasets/epic-100/gulp/train/ checkpoints/trn_rgb.ckpt datasets/epic-100/video_id_features/p01_features_new.pkl --p01-subset || date

@@ -5,6 +5,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from matplotlib.pyplot import step
 
 import numpy as np
 import pytorch_lightning as pl
@@ -491,7 +492,7 @@ class EpicActionRecogintionShapleyClassifier:
         return self.model(xs)
     
     def forward_tasks(self, xs: torch.Tensor) -> Dict[str, torch.Tensor]:
-        return split_task_outputs(self(xs), TASK_CLASS_COUNTS)
+        return split_task_outputs(self.model(xs), TASK_CLASS_COUNTS)
         
     def train_step(self) -> Dict[str, Any]:
 
@@ -524,17 +525,20 @@ class EpicActionRecogintionShapleyClassifier:
                 acc1 = step_results[f'{self.task_type}_accuracy@1']
                 acc5 = step_results[f'{self.task_type}_accuracy@5']
             except KeyError:
-                print(f"{self.task_type} cannot be used to index accuracy values")
+                # print(f"{self.task_type} cannot be used to index accuracy values")
+                """
+                Temporary fix for above mentioned issue... 
+                accuracies for both verb / noun are averaged
+                """
+                acc1 = (step_results['verb_accuracy@1'] + step_results['noun_accuracy@1']) / 2
+                acc5 = (step_results['verb_accuracy@5'] + step_results['noun_accuracy@5']) / 2
 
             loss.backward()
             self.optimiser.step()
             
             training_loss[f'{self.model.frame_count}_loss'].append(loss.detach().item())
-            try:
-                training_loss[f'{self.model.frame_count}_acc1'].append(acc1.item())
-                training_loss[f'{self.model.frame_count}_acc5'].append(acc5.item())
-            except KeyError:
-                print(f"{self.task_type} cannot be used to index accuracy values")
+            training_loss[f'{self.model.frame_count}_acc1'].append(acc1.item())
+            training_loss[f'{self.model.frame_count}_acc5'].append(acc5.item())
         
         return training_loss
 
@@ -559,14 +563,17 @@ class EpicActionRecogintionShapleyClassifier:
                 acc1 = step_results[f'{self.task_type}_accuracy@1']
                 acc5 = step_results[f'{self.task_type}_accuracy@5']
             except KeyError:
-                print(f"{self.task_type} cannot be used to index accuracy values")
+                # print(f"{self.task_type} cannot be used to index accuracy values")
+                """
+                Temporary fix for above mentioned issue... 
+                accuracies for both verb / noun are averaged
+                """
+                acc1 = (step_results['verb_accuracy@1'] + step_results['noun_accuracy@1']) / 2
+                acc5 = (step_results['verb_accuracy@5'] + step_results['noun_accuracy@5']) / 2
 
             testing_loss[f'{self.model.frame_count}_loss'].append(loss.item())
-            try:
-                testing_loss[f'{self.model.frame_count}_acc1'].append(acc1.item())
-                testing_loss[f'{self.model.frame_count}_acc5'].append(acc5.item())
-            except KeyError:
-                print(f"{self.task_type} cannot be used to index accuracy values")
+            testing_loss[f'{self.model.frame_count}_acc1'].append(acc1.item())
+            testing_loss[f'{self.model.frame_count}_acc5'].append(acc5.item())
 
         return testing_loss
 

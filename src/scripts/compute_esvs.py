@@ -62,14 +62,14 @@ def main(args):
     n_frames = args.sample_n_frames
     frame_sampler = RandomSampler(frame_count=n_frames, snippet_length=1, test=True)
 
-    v_models = [V_MTRN(frame_count=i) for i in range(1,9)]
-    n_models = [N_MTRN(frame_count=i) for i in range(1,9)]
+    v_models = [V_MTRN(frame_count=i, hidden_layer_size=1024, dropout_count=2, dropout_probability=0.3) for i in range(1,9)]
+    n_models = [N_MTRN(frame_count=i, hidden_layer_size=1024, dropout_count=2, dropout_probability=0.3) for i in range(1,9)]
 
     assert len(v_models) == len(n_models)
 
     for i in range(len(v_models)):
-        v_models[i].load_state_dict(torch.load(args.checkpoints / f'mtrn-frames={i+1}-type=verb.pt'))
-        n_models[i].load_state_dict(torch.load(args.checkpoints / f'mtrn-frames={i+1}-type=noun.pt'))
+        v_models[i].load_state_dict(torch.load(args.checkpoints / f'mtrn-type=verb-frames={i+1}-batch_size=512-lr=1e-05_hl=1024_dc=2_dcp=0.3_epoch=1500.pt'))
+        n_models[i].load_state_dict(torch.load(args.checkpoints / f'mtrn-type=noun-frames={i+1}-batch_size=512-lr=1e-05_hl=1024_dc=2_dcp=0.3_epoch=1500.pt'))
 
     # model = models[n_frames]
 
@@ -81,14 +81,14 @@ def main(args):
         priors=verb_class_priors,
         n_classes=len(verb_class_priors),
         device=device,
-        subset_sampler=ConstructiveRandomSampler(max_samples=128, device=device)
+        subset_sampler=ConstructiveRandomSampler(max_samples=1024, device=device)
     )
     n_attributor = OnlineShapleyAttributor(
         single_scale_models=n_models,
         priors=noun_class_priors,
         n_classes=len(noun_class_priors),
         device=device,
-        subset_sampler=ConstructiveRandomSampler(max_samples=128, device=device)
+        subset_sampler=ConstructiveRandomSampler(max_samples=1024, device=device)
     )
 
     def subsample_frames(video: torch.Tensor) -> Tuple[np.ndarray, torch.Tensor]:

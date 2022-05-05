@@ -12,12 +12,12 @@ import numpy as np
 import pandas as pd
 import base64
 
-from apps.esv_dashboard.result import Result, ShapleyValueResults
+from apps.esv_dashboard.result import Result, ShapleyValueResultsMTRN
 
 class Visualiser:
     def __init__(
         self,
-        results: ShapleyValueResults,
+        results: ShapleyValueResultsMTRN,
         colours: Dict[str, Any],
         verb2str: Dict[int, str],
         noun2str: Dict[int, str],
@@ -51,6 +51,8 @@ class Visualiser:
             "n_frames": self.results.max_n_frames,
             "default_frames": 4,
             "verb": 0,
+            "noun": 13,
+            "video": "P01_01_100"
         }
 
     def attach_to_app(self, app: Dash):
@@ -178,13 +180,15 @@ class Visualiser:
                         html.Div([
                             html.H4(children='Select a noun'),
                             dcc.Dropdown(
-                                id='noun'
+                                id='noun',
+                                value=self.default_state['noun']
                             )
                         ], style={'width':'20%','display':'inline-block','paddingLeft':'40px'}),
                         html.Div([
                             html.H4(children='Select a video'),
                             dcc.Dropdown(
-                                id='video'
+                                id='video',
+                                value=self.default_state['video']
                             )
                         ], style={'width':'20%','display':'inline-block','paddingLeft':'40px'}),
                         html.Div([

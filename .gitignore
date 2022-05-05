@@ -226,6 +226,7 @@ slurm*
 /notebooks/data/*
 /datasets/epic-100/*/*
 /datasets/epic-100/features
+datasets/epic-100/mf_features
 /datasets/epic-100/esvs
 /datasets/epic-100/video_frames
 /datasets/epic-100/video_id_features

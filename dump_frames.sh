@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#SBATCH --partition cpu
-#SBATCH --nodes=8
-#SBATCH --cpus-per-task=8
-#SBATCH --time 1-00:00
-#SBATCH --mem=32GB
+#SBATCH --partition gpu
+#SBATCH --nodes 1
+#SBATCH --gres gpu:1
+#SBATCH --time 7-00:00
+#SBATCH --mem=64GB
 
 # get rid of any modules already loaded
 module purge
