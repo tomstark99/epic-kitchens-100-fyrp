@@ -236,3 +236,6 @@ datasets/epic-100/mf_features
 
 # vim swp
 *.swp
+
+# submission
+/*.sh
