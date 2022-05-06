@@ -1,3 +1,10 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * This source code was taken, with permission from the original repo mentioned above
+ *
+""" 
+
 from abc import ABC
 from typing import List
 

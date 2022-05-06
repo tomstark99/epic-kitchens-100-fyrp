@@ -1,3 +1,10 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * This source code was taken, with permission from the original repo mentioned above
+ *
+""" 
+
 #!/usr/bin/env python3
 # Code for "TSM: Temporal Shift Module for Efficient Video Understanding"
 # arXiv:1811.08383

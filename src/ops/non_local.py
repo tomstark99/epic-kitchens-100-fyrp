@@ -1,3 +1,10 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * This source code was taken, with permission from the original repo mentioned above
+ *
+""" 
+
 # Non-local block using embedded gaussian
 # Code from
 # https://github.com/AlexHex7/Non-local_pytorch/blob/master/Non-Local_pytorch_0.3.1/lib/non_local_embedded_gaussian.py

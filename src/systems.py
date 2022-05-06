@@ -1,3 +1,13 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * The source code for the following classes was originally written by Will Price and used in this project:
+    * EpicActionRecogintionDataModule
+    * EpicActionRecognitionSystem
+ * 
+ * The EpicActionRecogintionShapleyClassifier was written by Tom Stark 2021 <github.com/tomstark99/epic-kitchens-100-fyrp>
+""" 
+
 import logging
 from pathlib import Path
 from typing import Any

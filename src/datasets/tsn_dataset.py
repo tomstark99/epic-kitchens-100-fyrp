@@ -1,3 +1,10 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * This source code was taken, with permission from the original repo mentioned above
+ *
+""" 
+
 import logging
 from typing import Callable
 from typing import List

@@ -1,3 +1,10 @@
+"""
+Will Price 2020 <github.com/willprice/playfair>
+ *
+ * This source code was taken, with permission from the original repo mentioned above
+ *
+""" 
+
 from pathlib import Path
 from typing import Any
 from typing import Dict
