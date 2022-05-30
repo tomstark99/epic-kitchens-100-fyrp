@@ -169,6 +169,18 @@ class VisualiserMF:
             else:
                 return self.plot_esvs(result, show_mf, n_frames)
 
+        @app.callback(
+            Output('esv-overlay','style'),
+            Output('esv-overlay','value'),
+            Input('esv-options','value'),
+            Input('esv-overlay','value')
+        )
+        def mf_switch(esv_type, esv_value):
+            if esv_type == 'mtrn':
+                return {'display':'inline-block','width':'40%'}, esv_value
+            else:
+                return {'display':'none','width':'40%'}, esv_value # change to [] to not store the value
+
     def render_layout(self):
         return html.Div([
             html.Div([
